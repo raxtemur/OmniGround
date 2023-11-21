@@ -1,6 +1,8 @@
 # OmniFusion
 
-OmniFusion is an advanced multimodal AI model designed to extend the capabilities of traditional language processing systems by integrating additional data modalities such as images, and potentially audio, 3D and video content.
+**OmniFusion** is an advanced multimodal AI model designed to extend the capabilities of traditional language processing systems by integrating additional data modalities such as images, and potentially audio, 3D and video content.
+
+**News!** OmniFusion weights will soon be available!
 
 ### Architecture
 

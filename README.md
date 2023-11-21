@@ -32,7 +32,7 @@ OmniFusion was benchmarked against the latest multimodal SOTA models. It excelle
 <img src="./content/radar.png" width="50%">
 </p>
 
-#### Table 1 - Comparative Model Performance on Visual Dialog Benchmark
+Model Performance on Visual Dialog Benchmark
 
 | Model        | NDCG | MRR  | Recall@1 | Recall@5 | Recall@10 |
 | ------------ | ---- | ---- | -------- | -------- | --------- |

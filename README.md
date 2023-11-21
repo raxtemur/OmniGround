@@ -8,9 +8,8 @@
 
 OmniFusion's core is the latest GigaChat-7B. Initially focusing on images, we selected the CLIP-ViT-L as the visual encoder for its efficient information transfer capabilities.
 
-### Training Process
+### Training Process consists of two stages
 
-Unfreezing the language model is a risky process due to potential degradation in textual domain performance. Therefore, the OmniFusion training is divided into two stages:
 1. Pre-training the adapter on Image Captioning tasks (LAION, CC-4M).
 2. Once the adapter has learned to map ViT's visual embeddings to the language model's textual space, we proceed to unfreeze GigaChat for improved understanding of dialog formats and complex queries.
 

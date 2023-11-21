@@ -32,6 +32,8 @@ OmniFusion was benchmarked against the latest multimodal SOTA models. It excelle
 | OmniFusion   | 25.91| 10.78| 4.74     | 13.80    | 20.53     |
 | LLaVA-13B    | 24.74| 8.91 | 2.98     | 10.80    | 18.02     |
 
+### Examples
+
 <p align="left">
 <img src="./content/examples.png" width="100%">
 </p>

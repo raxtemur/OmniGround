@@ -62,5 +62,5 @@ Main contributors:
 + Matvey Mihkalchuk
 + Maxim Kurkin
 + Irina Abdullaeva
-+ Denis Dimitrov: [Blog](https://t.me/dendi_math_ai)
++ Denis Dimitrov [Blog](https://t.me/dendi_math_ai)
 + Andrey Kuznetsov [Blog](https://t.me/complete_ai)

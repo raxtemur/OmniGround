@@ -12,7 +12,7 @@
 </p>
 
 
-OmniFusion's core is the latest GigaChat-7B. Initially focusing on images, we selected the CLIP-ViT-L as the visual encoder for its efficient information transfer capabilities. The most important component of OmniFusion is its adapter, a mechanism allowing the language model to interpret and incorporate information from different modalities. The adapter is a single-layer, four-headed transformer, which has shown superior performance compared to simpler linear layers or MLP structures.
+OmniFusion open source version core is Mistral-7B. Initially focusing on images, we selected the CLIP-ViT-L as the visual encoder for its efficient information transfer capabilities. The most important component of OmniFusion is its adapter, a mechanism allowing the language model to interpret and incorporate information from different modalities. The adapter is a single-layer, four-headed transformer, which has shown superior performance compared to simpler linear layers or MLP structures.
 
 This adapter takes embeddings from the visual encoder (excluding the CLS token) and maps them into textual embeddings compatible with the language model.
 
@@ -22,7 +22,7 @@ To further enhance the model's multimodal capabilities, we employ trainable spec
 ### Training Process consists of two stages
 
 1. Pre-training the adapter on Image Captioning tasks (LAION, CC-4M).
-2. Once the adapter has learned to map ViT's visual embeddings to the language model's textual space, we proceed to unfreeze GigaChat for improved understanding of dialog formats and complex queries.
+2. Once the adapter has learned to map ViT's visual embeddings to the language model's textual space, we proceed to unfreeze Mistral for improved understanding of dialog formats and complex queries.
 
 <p align="left">
 <img src="./content/datasets.png" width="80%">

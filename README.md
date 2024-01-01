@@ -1,5 +1,8 @@
 # OmniFusion
 
+[![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-blue)](https://huggingface.co/AIRI-Institute/OmniFusion)
+
+
 **OmniFusion** is an advanced multimodal AI model designed to extend the capabilities of traditional language processing systems by integrating additional data modalities such as images, and potentially audio, 3D and video content.
 
 ### ChangeLog

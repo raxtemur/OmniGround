@@ -6,7 +6,8 @@
 **OmniFusion** is an advanced multimodal AI model designed to extend the capabilities of traditional language processing systems by integrating additional data modalities such as images, and potentially audio, 3D and video content.
 
 ### ChangeLog
-[22/11/2023] OmniFusion weights will soon be available!
+[01/04/2024] OmniFusion-1.1 weights are uploaded to [Huggingface](https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1). Now the model can speak Russian :)
+[22/11/2023] OmniFusion weights are available on [Huggingface](https://huggingface.co/AIRI-Institute/OmniFusion)
 
 ### Architecture
 
@@ -44,6 +45,11 @@ Model Performance on Visual Dialog Benchmark
 | ------------ | ---- | ---- | -------- | -------- | --------- |
 | OmniFusion   | 25.91| 10.78| 4.74     | 13.80    | 20.53     |
 | LLaVA-13B    | 24.74| 8.91 | 2.98     | 10.80    | 18.02     |
+
+Omifusion-1.1 (rus)
+| Model            | textvqa| scienceqa  | pope      | gqa      | docvqa |
+| ---------------- | ------ | ---------- | --------- | -------- | --------- |
+| OmniFusion-1.1   | 0.4893 | 0.6802     | 0.7818    | 0.4600   | 0.3838    |
 
 ### Examples
 

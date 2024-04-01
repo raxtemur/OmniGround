@@ -1,0 +1,18 @@
+{
+    "exp_name": "mistral-default-sft",
+    "model_ckp": "mistralai/Mistral-7B-v0.1",
+    "pretrain_path": "path_to_pretrain_ckp_folder",
+    "n_epochs": 1,
+    "grad_accum": 64,
+    "learning_rate": 1e-4,
+    "prompt": "This is a dialog with AI assistant.\n",
+    "num_workers": 16,
+    "batch_size": 1,
+    "emb_dim": 4096,
+    "max_context_len": 2048,
+    "vision_emb_num": 576,
+    "ckp_iterations_step": 20000,
+    "projection_num_head": 4,
+    "json_data_path": "path_to_your_sft_dataset.json",
+    "image_folder": "path_to_your_sft_images_folder"
+}

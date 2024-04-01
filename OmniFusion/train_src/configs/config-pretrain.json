@@ -1,0 +1,16 @@
+{
+    "exp_name": "mistral-default-pretrain",
+    "model_ckp": "mistralai/Mistral-7B-v0.1",
+    "n_epochs": 1,
+    "grad_accum": 8,
+    "learning_rate": 1e-2,
+    "prompt": "This is a dialog with AI assistant.\n",
+    "num_workers": 16,
+    "batch_size": 4,
+    "emb_dim": 4096,
+    "max_context_len": 2048,
+    "vision_emb_num": 576,
+    "projection_num_head": 4,
+    "json_data_path": "path_to_your_dataset.json",
+    "image_folder": "path_to_your_images_folder"
+}

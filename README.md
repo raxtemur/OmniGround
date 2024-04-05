@@ -50,9 +50,10 @@ Model Performance on Visual Dialog Benchmark
 | LLaVA-13B    | 24.74| 8.91 | 2.98     | 10.80    | 18.02     |
 
 Omifusion-1.1 (rus)
-| Model            | textvqa| scienceqa  | pope      | gqa      | docvqa |
-| ---------------- | ------ | ---------- | --------- | -------- | --------- |
-| OmniFusion-1.1   | 0.4893 | 0.6802     | 0.7818    | 0.4600   | 0.3838    |
+| Model                                  | textvqa| scienceqa  | pope      | gqa      | ok_vqa  |
+| -------------------------------------- | ------ | ---------- | --------- | -------- | ------- |
+| OmniFusion-1.1 (one encoder, Mistral)  | **0.4893** | **0.6802**     | 0.7818    | 0.4600   | 0.5187  |
+| OmniFusion-1.1 (two encoders, Mistral) | 0.4755 | 0.6732     | **0.8153**    | **0.4761**   | **0.5317**  |
 
 ### Examples
 

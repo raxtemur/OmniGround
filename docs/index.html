@@ -201,9 +201,9 @@
           <div class="content has-text-justified">
             <p>
               <ol type="1">
-                <li><b>22/11/2023</b>. <span style="font-size: 95%;"> OmniFusion weights are available on <a href="https://huggingface.co/AIRI-Institute/OmniFusion">Huggingface</a> for OmniFusion-1.1 released</li>
-                <li><b>01/04/2024</b>. <span style="font-size: 95%;"> OmniFusion-1.1 weights are uploaded to <a href="https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1">Huggingface</a>. Now the model can speak Russian :)</li>
-                <li><b>01/04/2024</b>. <span style="font-size: 95%;"> Model training <a href="https://github.com/AIRI-Institute/OmniFusion/tree/main/OmniFusion/train_src">source code</a> for OmniFusion-1.1 released</li>
+                <li><b>22/11/2023</b> <span style="font-size: 95%;"> OmniFusion weights are available on <a href="https://huggingface.co/AIRI-Institute/OmniFusion">Huggingface</a> for OmniFusion-1.1 released</li>
+                <li><b>01/04/2024</b> <span style="font-size: 95%;"> OmniFusion-1.1 weights are uploaded to <a href="https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1">Huggingface</a>. Now the model can speak Russian :)</li>
+                <li><b>01/04/2024</b> <span style="font-size: 95%;"> Model training <a href="https://github.com/AIRI-Institute/OmniFusion/tree/main/OmniFusion/train_src">source code</a> for OmniFusion-1.1 released</li>
               </ol>  
            </p>
   
@@ -300,6 +300,54 @@
                   <td>2.98</td>
                   <td>10.80</td>
                   <td>18.02</td>
+              </tr>
+            </table>
+          </centering>  
+          <centering>
+            <div style="text-align: center;">
+              <img id="teaser" width="65%" class="center" src="images/radar.svg">   
+            </div>
+          </centering>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!--/ Results. -->    
+<div class="container is-max-desktop">
+
+<section class="section">
+  <!-- Results. -->
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-full-width">
+      <div class="content has-text-justified">
+        <p>
+          <centering>
+            <table class="center" style="margin-left:auto;margin-right:auto" cellspacing="2" border="1" width=80% height=10% cellpadding="5">
+              <caption>OmniFusion-1.1 scores</caption>
+              <tr>
+                  <th>Model</th>
+                  <td>textvqa</td>
+                  <td>scienceqa</td>
+                  <td>pope</td>
+                  <td>gqa</td>
+                  <td>ok_vqa</td>
+              </tr>
+              <tr>
+                  <th>OmniFusion-1.1 (one encoder, Mistral)</th>
+                  <td>0.4893</td>
+                  <td>0.6802</td>
+                  <td>0.7818</td>
+                  <td>0.4600</td>
+                  <td>0.5187</td>
+              </tr>
+              <tr>
+                  <th>OmniFusion-1.1 (two encoders, Mistral)</th>
+                  <td>0.4755</td>
+                  <td>0.6732</td>
+                  <td>0.8153</td>
+                  <td>0.4761</td>
+                  <td>0.5317</td>
               </tr>
             </table>
           </centering>  

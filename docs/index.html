@@ -21,6 +21,40 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
   <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.27.0/gradio.js"></script>
+
+  <!-- Add inside the <head> section -->
+  <style>
+    @media screen and (max-width: 768px) {
+      /* Adjust font sizes for smaller devices */
+      .title, .subtitle {
+        font-size: 1.5rem;
+      }
+      
+      /* Stack columns vertically on small screens */
+      .columns {
+        flex-direction: column;
+        margin: 0;
+      }
+      
+      /* Adjust padding and margins for smaller screens */
+      .section {
+        padding: 20px 10px;
+      }
+      
+      /* Ensure images are responsive */
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    
+      /* Adjust navigation menu, buttons, or other interactive elements for easier touch interaction */
+      .button, nav, .navbar {
+        font-size: 1rem;
+        padding: 10px;
+      }
+    }
+  </style>
+  
 </head>
 
 <style>

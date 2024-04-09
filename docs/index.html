@@ -1,635 +1,777 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="description" content="Visual Instruction Tuning" />
+        <meta name="keywords" content="multimodal chatbot" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>OmniFusion</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="description" content="Visual Instruction Tuning">
-  <meta name="keywords" content="multimodal chatbot">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OmniFusion</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+        <link rel="stylesheet" href=".static/css/index.css" />
+        <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/954/954591.png" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <link rel="stylesheet" href=".static/css/index.css">
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/954/954591.png">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+        <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.27.0/gradio.js"></script>
 
+        <!-- Add inside the <head> section -->
+        <style>
+            @media screen and (max-width: 768px) {
+                /* Adjust font sizes for smaller devices */
+                .title,
+                .subtitle {
+                    font-size: 1.5rem;
+                }
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
-  <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/3.27.0/gradio.js"></script>
+                /* Stack columns vertically on small screens */
+                .columns {
+                    flex-direction: column;
+                    margin: 0;
+                }
 
-  <!-- Add inside the <head> section -->
-  <style>
-    @media screen and (max-width: 768px) {
-      /* Adjust font sizes for smaller devices */
-      .title, .subtitle {
-        font-size: 1.5rem;
-      }
-      
-      /* Stack columns vertically on small screens */
-      .columns {
-        flex-direction: column;
-        margin: 0;
-      }
-      
-      /* Adjust padding and margins for smaller screens */
-      .section {
-        padding: 20px 10px;
-      }
-      
-      /* Ensure images are responsive */
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-    
-      /* Adjust navigation menu, buttons, or other interactive elements for easier touch interaction */
-      .button, nav, .navbar {
-        font-size: 1rem;
-        padding: 10px;
-      }
-    }
-  </style>
-  
-</head>
+                /* Adjust padding and margins for smaller screens */
+                .section {
+                    padding: 20px 10px;
+                }
 
-<style>
-  .expandable-card .card-text-container {
-    max-height: 200px;
-    overflow-y: hidden;
-    position: relative;
-  }
+                /* Ensure images are responsive */
+                img {
+                    max-width: 100%;
+                    height: auto;
+                }
 
-  .expandable-card.expanded .card-text-container {
-    max-height: none;
-  }
+                /* Adjust navigation menu, buttons, or other interactive elements for easier touch interaction */
+                .button,
+                nav,
+                .navbar {
+                    font-size: 1rem;
+                    padding: 10px;
+                }
+            }
 
-  .expand-btn {
-    position: relative;
-    display: none;
-    background-color: rgba(255, 255, 255, 0.8);
-    /* margin-top: -20px; */
-    /* justify-content: center; */
-    color: #510c75;
-    border-color: transparent;
-  }
+            .expandable-card .card-text-container {
+                max-height: 200px;
+                overflow-y: hidden;
+                position: relative;
+            }
 
-  .expand-btn:hover {
-    background-color: rgba(200, 200, 200, 0.8);
-    text-decoration: none;
-    border-color: transparent;
-    color: #510c75;
-  }
+            .expandable-card.expanded .card-text-container {
+                max-height: none;
+            }
 
-  .expand-btn:focus {
-    outline: none;
-    text-decoration: none;
-  }
+            .expand-btn {
+                position: relative;
+                display: none;
+                background-color: rgba(255, 255, 255, 0.8);
+                /* margin-top: -20px; */
+                /* justify-content: center; */
+                color: #510c75;
+                border-color: transparent;
+            }
 
-  .expandable-card:not(.expanded) .card-text-container:after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 90px;
-    background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 1));
-  }
+            .expand-btn:hover {
+                background-color: rgba(200, 200, 200, 0.8);
+                text-decoration: none;
+                border-color: transparent;
+                color: #510c75;
+            }
 
-  .expandable-card:not(.expanded) .expand-btn {
-    margin-top: -40px;
-  }
+            .expand-btn:focus {
+                outline: none;
+                text-decoration: none;
+            }
 
-  .card-body {
-    padding-bottom: 5px;
-  }
+            .expandable-card:not(.expanded) .card-text-container:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 90px;
+                background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 1));
+            }
 
-  .vertical-flex-layout {
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
+            .expandable-card:not(.expanded) .expand-btn {
+                margin-top: -40px;
+            }
 
-  .figure-img {
-    max-width: 100%;
-    height: auto;
-  }
+            .card-body {
+                padding-bottom: 5px;
+            }
 
-  .adjustable-font-size {
-    font-size: calc(0.5rem + 2vw);
-  }
+            .vertical-flex-layout {
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
 
-  .chat-history {
-    flex-grow: 1;
-    overflow-y: auto;
-    /* overflow-x: hidden; */
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 10px;
-  }
+            .figure-img {
+                max-width: 100%;
+                height: auto;
+            }
 
-  #gradio pre {
-    background-color: transparent;
-  }
-</style>
+            .adjustable-font-size {
+                font-size: calc(0.5rem + 2vw);
+            }
 
-<body>
+            .chat-history {
+                flex-grow: 1;
+                overflow-y: auto;
+                /* overflow-x: hidden; */
+                padding: 5px;
+                border-bottom: 1px solid #ccc;
+                margin-bottom: 10px;
+            }
 
+            #gradio pre {
+                background-color: transparent;
+            }
 
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">OmniFusion 
-            <h3 class="title is-3 publication-title">A simple path to multimodal language models</h3>
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <span class="link-block">
-                  <a href="https://habr.com/ru/companies/airi/articles/775108/" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                    </span>
-                    <span>Habr</span>
-                  </a>
-                </span>
-                <span class="link-block">
-                  <a href="https://github.com/AIRI-Institute/omnifusion" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code</span>
-                  </a>
-                </span>
-                <span class="link-block">
-                  <a href="#" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="far fa-images"></i>
-                    </span>
-                    <span>Telegram Bot (Coming Soon!)</span>
-                  </a>
-                </span>
-                <!-- <span class="link-block">
-                <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                  </a>
-              </span> -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+            .publication-links {
+                display: flex;
+                gap: 6px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        </style>
+    </head>
 
-  <!-- <section class="section"  style="background-color:#efeff081">
-    <div class="container is-max-desktop" id="gradio">
-      <gradio-app src="https://omnifusion.demo.cc"></gradio-app>
-    </div>
-  </section> -->
-
-  <section class="section"  style="background-color:#efeff081">
-    <div class="container is-max-desktop">
-      <!-- Abstract. -->
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-six-fifths">
-          <h2 class="title is-3">Abstract</h2>
-          <div class="content has-text-justified">
-            <p>
-              We introduce <it><b>OmniFusion</b></it>, an end-to-end trained large multimodal model that connects a vision encoder and LLM for general-purpose visual and language understanding
-              <ol type="1">
-                <li><b>Multimodal Instruct Data</b>. <span style="font-size: 95%;"> OmniFusion is trained on a mixture of open sourced synthetic instruction-following data and high-quality image-language datasets for various downstream tasks.</li>
-                <li><b>Model Architecture</b>. <span style="font-size: 95%;">To create our own multimodal model, we decided to take the best and most stable practices - a strong LLM, a powerful adapter, special tokens of new modalities, and multi-stage instructional learning with gradual unfreezing of the LLM.</li>
-                <li><b>Performance</b>. <span style="font-size: 95%;">Our early experiments show that OmniFusion demonstrates competitive multimodal chat abilities, acting on par with multimodal GPT-4V on unseen images/instructions in many usecases and achieving benchmark results comparable to larger models.</li>
-                  <li><b>Open Source</b>. <span style="font-size: 95%;">We provided weights of trained model using <a href="https://mistral.ai/news/announcing-mistral-7b/">Mistral</a> as LLM backbone.</li>
-              </ol>  
-           </p>
-  
-          </div>
-        </div>
-      </div>
-        
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container is-max-desktop">
-      <!-- Abstract. -->
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-six-fifths">
-          <h2 class="title is-3">Changelog</h2>
-          <div class="content has-text-justified">
-            <p>
-              <ol type="1">
-                <li><b>22/11/2023</b> <span style="font-size: 95%;"> OmniFusion weights are available on <a href="https://huggingface.co/AIRI-Institute/OmniFusion">Huggingface</a> for OmniFusion-1.1 released</li>
-                <li><b>01/04/2024</b> <span style="font-size: 95%;"> OmniFusion-1.1 weights are uploaded to <a href="https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1">Huggingface</a>. Now the model can speak Russian :)</li>
-                <li><b>01/04/2024</b> <span style="font-size: 95%;"> Model training <a href="https://github.com/AIRI-Institute/OmniFusion/tree/main/OmniFusion/train_src">source code</a> for OmniFusion-1.1 released</li>
-              </ol>  
-           </p>
-  
-          </div>
-        </div>
-      </div>
-        
-    </div>
-  </section>
- 
-
-<section class="section">
-  <!-- Results. -->
-  <div class="columns is-centered has-text-centered">
-    <div class="column is-six-fifths">
-      <h2 class="title is-3"><img id="painting_icon" width="3%" src="https://cdn-icons-png.flaticon.com/512/5379/5379860.png"> OmniFusion Architecture</h2>
-    </div>
-  </div>
-  <!-- </div> -->
-  <!--/ Results. -->    
-<div class="container is-max-desktop">
-
-  <div class="columns is-centered">
-    <div class="column is-full-width">
-      <div class="content has-text-justified"> 
-          <p>
-            OmniFusion connects pre-trained <a href="https://openai.com/research/clip">CLIP ViT-L/14</a> visual encoder and large language model, using a Transformer Encoder layer. 
-            <centering>
-              <div style="text-align: center;">
-                <img id="teaser" width="100%" src="images/omnifusion_arch.png">     
-              </div>
-            </centering>  
-            We consider a two-stage instruction-tuning procedure:
-            <ul type="1">
-              <li><b>Stage 1: Pre-training for Feature Alignment</b>. <span style="font-size: 95%;">Only the projection Transformer Layer is updated, based on a subset of CC3M and COCO.</span></li>
-              <li><b>Stage 2: Fine-tuning End-to-End</b>. <span style="font-size: 95%;">Both the projection and LLM are updated using a mix of instructive data: 
-              <centering>
-                <div style="text-align: center;">
-                  <img id="teaser" width="75%" src="images/Instructive SFT datasets.svg">     
+    <body>
+        <section class="hero">
+            <div class="hero-body">
+                <div class="container is-max-desktop">
+                    <div class="columns is-centered">
+                        <div class="column has-text-centered">
+                            <h1 class="title is-1 publication-title">OmniFusion</h1>
+                            <h3 class="title is-3 publication-title">A simple path to multimodal language models</h3>
+                            <div class="column has-text-centered">
+                                <div class="publication-links">
+                                    <span class="link-block">
+                                        <a
+                                            href="https://habr.com/ru/companies/airi/articles/775108/"
+                                            target="_blank"
+                                            class="external-link button is-normal is-rounded is-dark"
+                                        >
+                                            <span class="icon">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </span>
+                                            <span>Habr</span>
+                                        </a>
+                                    </span>
+                                    <span class="link-block">
+                                        <a
+                                            href="https://github.com/AIRI-Institute/omnifusion"
+                                            target="_blank"
+                                            class="external-link button is-normal is-rounded is-dark"
+                                        >
+                                            <span class="icon">
+                                                <i class="fab fa-github"></i>
+                                            </span>
+                                            <span>Code</span>
+                                        </a>
+                                    </span>
+                                    <span class="link-block">
+                                        <a
+                                            href="#"
+                                            target="_blank"
+                                            class="external-link button is-normal is-rounded is-dark"
+                                        >
+                                            <span class="icon">
+                                                <i class="far fa-images"></i>
+                                            </span>
+                                            <span>Telegram Bot (Coming Soon!)</span>
+                                        </a>
+                                    </span>
+                                    <!-- <span class="link-block">
+						<a href="#"
+						   class="external-link button is-normal is-rounded is-dark">
+						  <span class="icon">
+							<i class="fab fa-youtube"></i>
+						  </span>
+						  <span>Video</span>
+						  </a>
+					  </span> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </centering>  
-            </ul>
-          </p>
-      </div>
-         
-    </div>
-  </div>
-
-
-</section>
-
-<section class="section">
-  <!-- Results. -->
-  <div class="columns is-centered has-text-centered">
-    <div class="column is-six-fifths">
-      <h2 class="title is-3"><img id="painting_icon" width="3%" src="https://cdn-icons-png.flaticon.com/512/3515/3515174.png"> Performance</h2>
-    </div>
-  </div>
-  <!-- </div> -->
-  <!--/ Results. -->    
-<div class="container is-max-desktop">
-
-
-<section class="section">
-  <!-- Results. -->
-  <div class="columns is-centered has-text-centered">
-    <div class="column is-full-width">
-      <div class="content has-text-justified">
-        <p>
-          OmniFusion demonstrates competitive to state-of-the-art performance on a range of benchmarks and in subjective evaluation on downstream tasks.
-          <centering>
-            <div class="table-responsive">
-              <table class="center" style="margin-left:auto;margin-right:auto" cellspacing="2" border="1" width=80% height=10% cellpadding="5">
-                <caption>Visual Dialog Performance </caption>
-                <tr>
-                    <th>Model</th>
-                    <td>NDCG</td>
-                    <td>MRR</td>
-                    <td>Recall@1</td>
-                    <td>Recall@5</td>
-                    <td>Recall@10</td>
-                </tr>
-                <tr>
-                    <th>OmniFusion</th>
-                    <td>25.91</td>
-                    <td>10.78</td>
-                    <td>4.74</td>
-                    <td>13.80</td>
-                    <td>20.53</td>
-                </tr>
-                <tr>
-                    <th>LLaVA-13B</th>
-                    <td>24.74</td>
-                    <td>8.91</td>
-                    <td>2.98</td>
-                    <td>10.80</td>
-                    <td>18.02</td>
-                </tr>
-              </table>
             </div>
-          </centering>  
-          <centering>
-            <div style="text-align: center;">
-              <img id="teaser" width="65%" class="center" src="images/radar.svg">   
+        </section>
+
+        <!-- <section class="section"  style="background-color:#efeff081">
+  <div class="container is-max-desktop" id="gradio">
+	<gradio-app src="https://omnifusion.demo.cc"></gradio-app>
+  </div>
+</section> -->
+
+        <section class="section" style="background-color: #efeff081">
+            <div class="container is-max-desktop">
+                <!-- Abstract. -->
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-six-fifths">
+                        <h2 class="title is-3">Abstract</h2>
+                        <div class="content has-text-justified">
+                            <p>
+                                We introduce <it><b>OmniFusion</b></it
+                                >, an end-to-end trained large multimodal model that connects a vision encoder and LLM
+                                for general-purpose visual and language understanding
+                            </p>
+                            <ol type="1">
+                                <li>
+                                    <b>Multimodal Instruct Data</b>.
+                                    <span style="font-size: 95%">
+                                        OmniFusion is trained on a mixture of open sourced synthetic
+                                        instruction-following data and high-quality image-language datasets for various
+                                        downstream tasks.</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>Model Architecture</b>.
+                                    <span style="font-size: 95%"
+                                        >To create our own multimodal model, we decided to take the best and most stable
+                                        practices - a strong LLM, a powerful adapter, special tokens of new modalities,
+                                        and multi-stage instructional learning with gradual unfreezing of the LLM.</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>Performance</b>.
+                                    <span style="font-size: 95%"
+                                        >Our early experiments show that OmniFusion demonstrates competitive multimodal
+                                        chat abilities, acting on par with multimodal GPT-4V on unseen
+                                        images/instructions in many usecases and achieving benchmark results comparable
+                                        to larger models.</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>Open Source</b>.
+                                    <span style="font-size: 95%"
+                                        >We plan to provide weights of trained model using
+                                        <a href="https://mistral.ai/news/announcing-mistral-7b/">Mistral</a> as LLM
+                                        backbone.</span
+                                    >
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </centering>
-        </p>
-      </div>
-    </div>
-  </div>
-  <!-- </div> -->
-  <!--/ Results. -->    
-<div class="container is-max-desktop">
+        </section>
 
-<section class="section">
-  <!-- Results. -->
-  <div class="columns is-centered has-text-centered">
-    <div class="column is-full-width">
-      <div class="content has-text-justified">
-        <p>
-          <div class="table-responsive">
-            <table>
-              <caption>OmniFusion-1.1 scores</caption>
-              <tr>
-                  <th>Model</th>
-                  <td>textvqa</td>
-                  <td>scienceqa</td>
-                  <td>pope</td>
-                  <td>gqa</td>
-                  <td>ok_vqa</td>
-              </tr>
-              <tr>
-                  <th>OmniFusion-1.1 (one encoder, Mistral)</th>
-                  <td>0.4893</td>
-                  <td>0.6802</td>
-                  <td>0.7818</td>
-                  <td>0.4600</td>
-                  <td>0.5187</td>
-              </tr>
-              <tr>
-                  <th>OmniFusion-1.1 (two encoders, Mistral)</th>
-                  <td>0.4755</td>
-                  <td>0.6732</td>
-                  <td>0.8153</td>
-                  <td>0.4761</td>
-                  <td>0.5317</td>
-              </tr>
-            </table>
-          </div>
-          OmniFusion-1.1 (with proprietary GigaChat LLM) results on various benchmarks:
-          <centering>
-            <div style="text-align: center;">
-              <img id="teaser" width="65%" class="center" src="images/radar_plot_gigachat.png">   
+        <section class="section">
+            <div class="container is-max-desktop">
+                <!-- Abstract. -->
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-six-fifths">
+                        <h2 class="title is-3">Changelog</h2>
+                        <div class="content has-text-justified">
+                            <ol type="1">
+                                <li>
+                                    <b>22/11/2023</b>
+                                    <span style="font-size: 95%">
+                                        OmniFusion weights are available on
+                                        <a href="https://huggingface.co/AIRI-Institute/OmniFusion">Huggingface</a> for
+                                        OmniFusion-1.1 released</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>01/04/2024</b>
+                                    <span style="font-size: 95%">
+                                        OmniFusion-1.1 weights are uploaded to
+                                        <a
+                                            href="https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1"
+                                            >Huggingface</a
+                                        >. Now the model can speak Russian :)</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>01/04/2024</b>
+                                    <span style="font-size: 95%">
+                                        Model training
+                                        <a
+                                            href="https://github.com/AIRI-Institute/OmniFusion/tree/main/OmniFusion/train_src"
+                                            >source code</a
+                                        >
+                                        for OmniFusion-1.1 released</span
+                                    >
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </centering>
-        </p>
-      </div>
-    </div>
-  </div>
-  <!-- </div> -->
-  <!--/ Results. -->    
-<div class="container is-max-desktop">
+        </section>
 
+        <section class="section">
+            <!-- Results. -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-six-fifths">
+                    <h2 class="title is-3 d-flex flex-column align-items-center">
+                        <img
+                            id="painting_icon"
+							width="50"
+							height="50"
+							style="min-width: 50px; object-fit: contain; margin-bottom: 10px"
+                            src="https://cdn-icons-png.flaticon.com/512/5379/5379860.png"
+                        />
+                        OmniFusion Architecture
+                    </h2>
+                </div>
+            </div>
+            <!-- </div> -->
+            <!--/ Results. -->
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column is-full-width">
+                        <div class="content has-text-justified">
+                            <p>
+                                OmniFusion connects pre-trained
+                                <a href="https://openai.com/research/clip">CLIP ViT-L/14</a> visual encoder and large
+                                language model, using a Transformer Encoder layer.
+                                <centering>
+                                    <div style="text-align: center">
+                                        <img id="teaser" width="100%" src="images/omnifusion_arch.png" />
+                                    </div>
+                                </centering>
+                            </p>
+                            <p>We consider a two-stage instruction-tuning procedure:</p>
+                            <ul type="1">
+                                <li>
+                                    <b>Stage 1: Pre-training for Feature Alignment</b>.
+                                    <span style="font-size: 95%"
+                                        >Only the projection Transformer Layer is updated, based on a subset of CC3M and
+                                        COCO.</span
+                                    >
+                                </li>
+                                <li>
+                                    <b>Stage 2: Fine-tuning End-to-End</b>.
+                                    <span style="font-size: 95%"
+                                        >Both the projection and LLM are updated using a mix of instructive data:
+                                        <centering>
+                                            <div style="text-align: center">
+                                                <img
+                                                    id="teaser"
+                                                    width="75%"
+                                                    src="images/Instructive SFT datasets.svg"
+                                                />
+                                            </div>
+                                        </centering>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<section class="section">
-  <div class="container mt-5">
-    <!-- <h2 class="text-center mb-5">Who's GPT-4's favorite? Battles between State-of-the-Art Chatbots</h2> -->
-    <!-- Selection -->
-    <div class="form-row" style="justify-content: flex-end;">
-      <div class="form-group col-md-1">
-        <div class="col-md-2" style="width: 100%"><label>&nbsp;</label></div>
-        <div class="btn-group" role="group" aria-label="Left and Right Controller"
-          style="width: 100%;align-items: flex-end;justify-content: center;flex-direction: row;display: flex;">
-          <button type="button" class="form-control btn btn-primary" id="prev-question"><i
-              class="material-icons">keyboard_arrow_left</i></button>
-          <button type="button" class="form-control btn btn-primary" id="next-question"><i
-              class="material-icons">keyboard_arrow_right</i></button>
+        <section class="section">
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-six-fifths">
+                    <h2 class="title is-3 d-flex flex-column align-items-center">
+                        <img
+                            alt="painting_icon"
+                            id="painting_icon"
+                            width="50"
+							height="50"
+							style="min-width: 50px; object-fit: contain; margin-bottom: 10px"
+                            src="https://cdn-icons-png.flaticon.com/512/3515/3515174.png"
+                        />
+                        Performance
+                    </h2>
+                </div>
+            </div>
 
-        </div>
-      </div>
-    </div>
+            <div class="container is-max-desktop">
+                <!-- Results. -->
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-full-width">
+                        <div class="content has-text-justified">
+                            <p>
+                                OmniFusion demonstrates competitive to state-of-the-art performance on a range of
+                                benchmarks and in subjective evaluation on downstream tasks.
+                                <centering>
+                                    <div class="table-responsive">
+                                        <table
+                                            class="center"
+                                            style="margin-left: auto; margin-right: auto"
+                                            cellspacing="2"
+                                            border="1"
+                                            width="80%"
+                                            height="10%"
+                                            cellpadding="5"
+                                        >
+                                            <caption>
+                                                Visual Dialog Performance
+                                            </caption>
+                                            <tr>
+                                                <th>Model</th>
+                                                <td>NDCG</td>
+                                                <td>MRR</td>
+                                                <td>Recall@1</td>
+                                                <td>Recall@5</td>
+                                                <td>Recall@10</td>
+                                            </tr>
+                                            <tr>
+                                                <th>OmniFusion</th>
+                                                <td>25.91</td>
+                                                <td>10.78</td>
+                                                <td>4.74</td>
+                                                <td>13.80</td>
+                                                <td>20.53</td>
+                                            </tr>
+                                            <tr>
+                                                <th>LLaVA-13B</th>
+                                                <td>24.74</td>
+                                                <td>8.91</td>
+                                                <td>2.98</td>
+                                                <td>10.80</td>
+                                                <td>18.02</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </centering>
+                                <centering>
+                                    <div style="text-align: center">
+                                        <img id="teaser" width="65%" class="center" src="images/radar.svg" />
+                                    </div>
+                                </centering>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- </div> -->
+                <!--/ Results. -->
+            </div>
 
-    <!-- Question Card -->
-    <div style="display: flex; justify-content: center; align-items: center;">
-      <div class="card mb-4" style="width: 100%; display: flex; align-items: center;">
-        <!-- <p><b>Description:</b> Monalisa is a famous painting by Leonardo da Vinci. </p> -->
+            <div class="container is-max-desktop">
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-full-width">
+                        <div class="content has-text-justified">
+                            <div class="table-responsive">
+                                <table>
+                                    <caption>
+                                        OmniFusion-1.1 scores
+                                    </caption>
+                                    <tr>
+                                        <th>Model</th>
+                                        <td>textvqa</td>
+                                        <td>scienceqa</td>
+                                        <td>pope</td>
+                                        <td>gqa</td>
+                                        <td>ok_vqa</td>
+                                    </tr>
+                                    <tr>
+                                        <th>OmniFusion-1.1 (one encoder, Mistral)</th>
+                                        <td>0.4893</td>
+                                        <td>0.6802</td>
+                                        <td>0.7818</td>
+                                        <td>0.4600</td>
+                                        <td>0.5187</td>
+                                    </tr>
+                                    <tr>
+                                        <th>OmniFusion-1.1 (two encoders, Mistral)</th>
+                                        <td>0.4755</td>
+                                        <td>0.6732</td>
+                                        <td>0.8153</td>
+                                        <td>0.4761</td>
+                                        <td>0.5317</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <p>
+                                OmniFusion-1.1 (with proprietary GigaChat LLM) results on various benchmarks:
+                                <centering>
+                                    <div style="text-align: center">
+                                        <img
+                                            id="teaser"
+                                            width="65%"
+                                            class="center"
+                                            src="images/radar_plot_gigachat.png"
+                                        />
+                                    </div>
+                                </centering>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="card-body" id="selected-question" style="display: flex; height: 80vh;">
-          <div class="chat-history">
-            <!-- Add your chat messages here -->
-          </div>
+            <div class="container is-max-desktop">
+                <div class="mt-5">
+                    <!-- <h2 class="text-center mb-5">Who's GPT-4's favorite? Battles between State-of-the-Art Chatbots</h2> -->
+                    <!-- Selection -->
+                    <div class="form-row" style="justify-content: flex-end">
+                        <div class="form-group col-md-1">
+                            <div class="col-md-2" style="width: 100%"><label>&nbsp;</label></div>
+                            <div
+                                class="btn-group"
+                                role="group"
+                                aria-label="Left and Right Controller"
+                                style="
+                                    width: 100%;
+                                    align-items: flex-end;
+                                    justify-content: center;
+                                    flex-direction: row;
+                                    display: flex;
+                                "
+                            >
+                                <button type="button" class="form-control btn btn-primary" id="prev-question">
+                                    <i class="material-icons">keyboard_arrow_left</i>
+                                </button>
+                                <button type="button" class="form-control btn btn-primary" id="next-question">
+                                    <i class="material-icons">keyboard_arrow_right</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-        </div>
-      </div>
-    </div>
+                    <!-- Question Card -->
+                    <div style="display: flex; justify-content: center; align-items: center">
+                        <div class="card mb-4" style="width: 100%; display: flex; align-items: center">
+                            <!-- <p><b>Description:</b> Monalisa is a famous painting by Leonardo da Vinci. </p> -->
+                            <div class="card-body" id="selected-question" style="display: flex; height: 80vh">
+                                <div class="chat-history">
+                                    <!-- Add your chat messages here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  </div>
-</section>
+        <!--<section class="section" id="BibTeX">
+            <div class="container is-max-desktop content">
+                <h2 class="title">BibTeX</h2>
+                <pre><code></code></pre>
+            </div>
+        </section>-->
 
-  <!-- <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <h2 class="title">BibTeX</h2>
-      <pre><code>
-  </code></pre>
-    </div>
-  </section> -->
-  
-  <section class="section" id="Acknowledgement">
-    <div class="container is-max-desktop content">
-      <h2 class="title">Acknowledgement</h2>
-      <p>
-        This website is adapted from <a
-        href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-        Commons Attribution-ShareAlike 4.0 International License</a>.
-      </p>
+        <section class="section" id="Acknowledgement">
+            <div class="container is-max-desktop content">
+                <h2 class="title">Acknowledgement</h2>
+                <p>
+                    This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>,
+                    licensed under a
+                    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"
+                        >Creative Commons Attribution-ShareAlike 4.0 International License</a
+                    >.
+                </p>
+                <p>
+                    <b>Usage and License Notices</b>: The data, code and checkpoint is intended and licensed for
+                    research use only. They are also restricted to uses that follow the license agreement of CLIP.
+                </p>
+            </div>
+        </section>
 
-      <p>
-<b>Usage and License Notices</b>: The data, code and checkpoint is intended and licensed for research use only. They are also restricted to uses that follow the license agreement of CLIP. 
-</p>
+        <script>
+            // Handle message showing
+            function createChatRow(sender, text, imageSrc) {
+                var article = document.createElement('article');
+                article.className = 'media';
 
-    </div>
-  </section>
+                var figure = document.createElement('figure');
+                figure.className = 'media-left';
 
-  <script>
-    // Handle message showing
-    function createChatRow(sender, text, imageSrc) {
-      var article = document.createElement("article");
-      article.className = "media"
+                var span = document.createElement('span');
+                span.className = 'icon is-large';
 
-      var figure = document.createElement("figure");
-      figure.className = "media-left";
+                var icon = document.createElement('i');
+                icon.className =
+                    'fas fas fa-2x' + (sender === 'User' ? ' fa-user ' : sender === 'OmniFusion' ? ' fa-robot' : '');
 
-      var span = document.createElement("span");
-      span.className = "icon is-large";
+                var media = document.createElement('div');
+                media.className = 'media-content';
 
-      var icon = document.createElement("i");
-      icon.className = "fas fas fa-2x" + (sender === "User" ? " fa-user " : sender === "OmniFusion" ? " fa-robot" : "");
+                var content = document.createElement('div');
+                content.className = 'content';
 
-      var media = document.createElement("div");
-      media.className = "media-content";
+                var para = document.createElement('p');
 
-      var content = document.createElement("div");
-      content.className = "content";
+                // wrap text in pre tag to preserve whitespace and line breaks
+                var pre_text = document.createElement('pre');
+                pre_text.style =
+                    'background-color: white; font-size: 18px; font-family: Arial; padding: 0; margin: 0; white-space: pre-wrap; word-wrap: break-word;';
+                var paraText = document.createTextNode(text);
+                pre_text.appendChild(paraText);
 
-      var para = document.createElement("p");
+                var strong = document.createElement('strong');
+                strong.innerHTML = sender;
+                var br = document.createElement('br');
 
-      // wrap text in pre tag to preserve whitespace and line breaks
-      var pre_text = document.createElement("pre");
-      pre_text.style = "background-color: white; font-size: 18px; font-family: Arial; padding: 0; margin: 0; white-space: pre-wrap; word-wrap: break-word;";
-      var paraText = document.createTextNode(text);
-      pre_text.appendChild(paraText);
+                para.appendChild(strong);
+                para.appendChild(br);
+                para.appendChild(pre_text);
 
-      var strong = document.createElement("strong");
-      strong.innerHTML = sender;
-      var br = document.createElement("br");
+                // Add image if imageSrc is provided
+                if (imageSrc) {
+                    var img = document.createElement('img');
+                    img.src = imageSrc;
+                    img.style = 'max-width: 80%; max-height: 500px;'; // Adjust the style as needed
+                    para.appendChild(img);
+                }
 
-      para.appendChild(strong);
-      para.appendChild(br);
-      para.appendChild(pre_text);
+                content.appendChild(para);
+                media.appendChild(content);
+                span.appendChild(icon);
+                figure.appendChild(span);
+                if (sender !== 'Description') {
+                    article.appendChild(figure);
+                }
+                article.appendChild(media);
+                return article;
+            }
 
-      // Add image if imageSrc is provided
-      if (imageSrc) {
-        var img = document.createElement("img");
-        img.src = imageSrc;
-        img.style = "max-width: 80%; max-height: 500px;"; // Adjust the style as needed
-        para.appendChild(img);
-      }
+            function addMessageToChatHistory(sender, message, imageSrc) {
+                const chatHistory = document.querySelector('.chat-history');
+                const chatRow = createChatRow(sender, message, imageSrc);
+                chatHistory.appendChild(chatRow);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
 
-      content.appendChild(para);
-      media.appendChild(content);
-      span.appendChild(icon);
-      figure.appendChild(span);
-      if (sender !== "Description") {
-        article.appendChild(figure);
-      };
-      article.appendChild(media);
-      return article;
-    }
+            function clearChatHistory() {
+                const chatHistory = document.querySelector('.chat-history');
+                chatHistory.innerHTML = '';
+            }
 
-    function addMessageToChatHistory(sender, message, imageSrc) {
-      const chatHistory = document.querySelector('.chat-history');
-      const chatRow = createChatRow(sender, message, imageSrc);
-      chatHistory.appendChild(chatRow);
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-    }
+            //
+            const conversations = [
+                {
+                    description: 'teeth',
+                    turns: [
+                        [
+                            'User',
+                            'Are there wisdom teeth that need to be removed in this x-ray image?​',
+                            'static/images/teeth.jpeg',
+                        ],
+                        ['OmniFusion', 'Yes, there are wisdom teeth that need to be removed in the x-ray image.'],
+                        ['User', 'How many of them are needed to be removed?'],
+                        ['OmniFusion', 'There are three wisdom teeth that need to be removed.'],
+                        ['User', 'Which wisdom tooth is hardest to remove?'],
+                        ['OmniFusion', 'The third wisdom tooth from the left is the hardest to remove.'],
+                    ],
+                },
+                {
+                    description: 'spb',
+                    turns: [
+                        ['Description', 'Please read the description and answer the question.'],
+                        ['User', 'What is the city depicted on the map?​', 'static/images/spb-map.png'],
+                        ['OmniFusion', 'The map depicts St. Petersburg.'],
+                    ],
+                },
+                {
+                    description: 'bread',
+                    turns: [
+                        ['User', 'Is it suitable to eat?', 'static/images/bread.jpg'],
+                        ['OmniFusion', 'No, it is not suitable to eat.'],
+                        ['User', 'Why not? Explain please'],
+                        [
+                            'OmniFusion',
+                            'The piece of toast on the plate is covered in mold, when is a sign of food spoilage or contamination. Eating moldy food can lead to various health issues, such as allergic reactions, digestive problems, and infections. In this case, it is best to discard the moldy toast and avoid consuming it.',
+                        ],
+                    ],
+                },
+                {
+                    description: 'speed',
+                    turns: [
+                        [
+                            'User',
+                            'What is the read of speedometer in kilometers per hour?',
+                            'static/images/speedlimit.png',
+                        ],
+                        ['OmniFusion', 'The read of the speed meter is 50.'],
+                        ['User', 'Does it violate the speed limit on the sign? What is the speed limit on the sign?'],
+                        ['OmniFusion', "Yes. It's 45."],
+                    ],
+                },
+                {
+                    description: 'design',
+                    turns: [
+                        // ["Description", "Please read the description and answer the question."],
+                        [
+                            'User',
+                            'In which direction is the master bedroom located? (choose from North, South, West, East)​',
+                            'static/images/design.png',
+                        ],
+                        ['OmniFusion', 'The master bedroom is located in the South direction.'],
+                        [
+                            'User',
+                            'And in which corner of the image is this bedroom located? (upper left, upper right, lower left, lower right)​',
+                        ],
+                        ['OmniFusion', 'The bedroom is located in the upper right corner of the image.'],
+                    ],
+                },
+                {
+                    description: 'iqtest',
+                    turns: [
+                        // ["Description", "Please read the description and answer the question."],
+                        [
+                            'User',
+                            'Here are three sub images arranged in a 2-by-2 matrix. First, look at the two images in the first column, in the top left and ' +
+                                'bottom left. Then, find out the pattern in the first column ' +
+                                'based on the left two images. Next, use the found pattern ' +
+                                'and the image in the top right to infer the missing figure. ' +
+                                'Finally, describe what would the missing image look like?​',
+                            'static/images/iqtest.png',
+                        ],
+                        [
+                            'OmniFusion',
+                            'The missing image in the top right corner of the matrix would be a star with a single point, which is the pattern observed in the first column. This pattern can be inferred from the two images in the top left and bottom left corners of the matrix. The missing image would be a star with a single point, which completes the pattern of stars in the first column.',
+                        ],
+                    ],
+                },
+            ];
 
-    function clearChatHistory() {
-      const chatHistory = document.querySelector('.chat-history');
-      chatHistory.innerHTML = "";
-    }
+            // The current image index
+            let currentIndex = 0;
 
-    // 
-    const conversations = [
-      {
-        "description": "teeth",
-        "turns": [
-          ["User",  "Are there wisdom teeth that need to be removed in this x-ray image?​", "static/images/teeth.jpeg"],
-          ["OmniFusion", "Yes, there are wisdom teeth that need to be removed in the x-ray image."],
-          ["User", "How many of them are needed to be removed?"],
-          ["OmniFusion", "There are three wisdom teeth that need to be removed."],
-          ["User", "Which wisdom tooth is hardest to remove?"],
-          ["OmniFusion", "The third wisdom tooth from the left is the hardest to remove."],
-        ]
-      },
-      {
-        "description": "spb",
-        "turns": [
-          ["Description", "Please read the description and answer the question."],
-          ["User",  "What is the city depicted on the map?​", "static/images/spb-map.png"],
-          ["OmniFusion", "The map depicts St. Petersburg."]
-        ]
-      },
-      {
-        "description": "bread",
-        "turns": [
-          ["User", "Is it suitable to eat?", "static/images/bread.jpg"],
-          ["OmniFusion", "No, it is not suitable to eat."],
-          ["User", "Why not? Explain please"],
-          ["OmniFusion", "The piece of toast on the plate is covered in mold, when is a sign of food spoilage or contamination. Eating moldy food can lead to various health issues, such as allergic reactions, digestive problems, and infections. In this case, it is best to discard the moldy toast and avoid consuming it."]
-          ]
-      },
-      {
-        "description": "speed",
-        "turns": [
-          ["User", "What is the read of speedometer in kilometers per hour?", "static/images/speedlimit.png"],
-          ["OmniFusion", "The read of the speed meter is 50."],
-          ["User", "Does it violate the speed limit on the sign? What is the speed limit on the sign?"],
-          ["OmniFusion", "Yes. It's 45."],
-        ]
-      },
-      {
-        "description": "design",
-        "turns": [
-          // ["Description", "Please read the description and answer the question."],
-          ["User", "In which direction is the master bedroom located? (choose from North, South, West, East)​", "static/images/design.png"],
-          ["OmniFusion", "The master bedroom is located in the South direction."],
-          ["User", "And in which corner of the image is this bedroom located? (upper left, upper right, lower left, lower right)​"],
-          ["OmniFusion", "The bedroom is located in the upper right corner of the image."]
-        ]
-      },
-      {
-        "description": "iqtest",
-        "turns": [
-          // ["Description", "Please read the description and answer the question."],
-          ["User", "Here are three sub images arranged in a 2-by-2 matrix. First, look at the two images in the first column, in the top left and " +
-          "bottom left. Then, find out the pattern in the first column " +
-          "based on the left two images. Next, use the found pattern " + 
-          "and the image in the top right to infer the missing figure. " +
-          "Finally, describe what would the missing image look like?​", "static/images/iqtest.png"],
-          ["OmniFusion", "The missing image in the top right corner of the matrix would be a star with a single point, which is the pattern observed in the first column. This pattern can be inferred from the two images in the top left and bottom left corners of the matrix. The missing image would be a star with a single point, which completes the pattern of stars in the first column."]
-        ]
-      },
-    ];
+            // The function to update the displayed chat history
+            function update_dialog_demo() {
+                // Clear the chat history
+                clearChatHistory();
 
-    // The current image index
-    let currentIndex = 0;
+                for (let i = 0; i < conversations[currentIndex].turns.length; i++) {
+                    if (conversations[currentIndex].turns[i].length == 2) {
+                        addMessageToChatHistory(
+                            conversations[currentIndex].turns[i][0],
+                            conversations[currentIndex].turns[i][1]
+                        );
+                    } else {
+                        addMessageToChatHistory(
+                            conversations[currentIndex].turns[i][0],
+                            conversations[currentIndex].turns[i][1],
+                            conversations[currentIndex].turns[i][2]
+                        );
+                    }
+                }
 
-    // The function to update the displayed chat history
-    function update_dialog_demo() {
-      // Clear the chat history
-      clearChatHistory();
+                // scroll to the top of the chat history
+                document.querySelector('.chat-history').scrollTop = 0;
+            }
 
-      for (let i = 0; i < conversations[currentIndex].turns.length; i++) {
-        if (conversations[currentIndex].turns[i].length == 2) {
-          addMessageToChatHistory(conversations[currentIndex].turns[i][0], conversations[currentIndex].turns[i][1]);
-        }
-        else {
-          addMessageToChatHistory(conversations[currentIndex].turns[i][0], conversations[currentIndex].turns[i][1], conversations[currentIndex].turns[i][2]);
-        }
-      }
+            // Initialize the displayed image
+            update_dialog_demo();
 
-      // scroll to the top of the chat history
-      document.querySelector('.chat-history').scrollTop = 0;
-    }
+            // Event listeners for the buttons
+            document.getElementById('prev-question').addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + conversations.length) % conversations.length;
+                update_dialog_demo();
+            });
 
-    // Initialize the displayed image
-    update_dialog_demo();
-
-    // Event listeners for the buttons
-    document.getElementById('prev-question').addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + conversations.length) % conversations.length;
-      update_dialog_demo();
-    });
-
-    document.getElementById('next-question').addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % conversations.length;
-      update_dialog_demo();
-    });
-
-
-  </script>
-
-</body>
-
+            document.getElementById('next-question').addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % conversations.length;
+                update_dialog_demo();
+            });
+        </script>
+    </body>
 </html>

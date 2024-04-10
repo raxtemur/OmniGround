@@ -68,11 +68,7 @@ Omifusion-1.0 (previous version) Performance on Visual Dialog Benchmark
 | OmniFusion   | 25.91| 10.78| 4.74     | 13.80    | 20.53     |
 | LLaVA-13B    | 24.74| 8.91 | 2.98     | 10.80    | 18.02     |
 
-### Examples
 
-<p align="left">
-<img src="./content/examples.png" width="100%">
-</p>
 
 ### OmniFusion-1.1 examples
 <p align="left">
@@ -80,6 +76,11 @@ Omifusion-1.0 (previous version) Performance on Visual Dialog Benchmark
 </p>
 <p align="left">
 <img src="https://raw.githubusercontent.com/AIRI-Institute/OmniFusion/main/content/ex2.png" width="100%">
+</p>
+
+### OmniFusion-1.0 Examples
+<p align="left">
+<img src="./content/examples.png" width="100%">
 </p>
 
 ### Future Plans

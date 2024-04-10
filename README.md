@@ -1,6 +1,7 @@
 # OmniFusion
 
 [![Hugging Face](https://img.shields.io/badge/Model-Hugging%20Face-yellow)](https://huggingface.co/AIRI-Institute/OmniFusion)
+
 [ArXiv](https://arxiv.org/abs/2404.06212) [Project page](https://airi-institute.github.io/OmniFusion/)
 
 

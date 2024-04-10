@@ -38,13 +38,15 @@ To further enhance the model's multimodal capabilities, we employ trainable spec
 ### Results
 
 OmniFusion was benchmarked against the latest multimodal SOTA models. It excelled in generative metrics and classification benchmarks like TextVQA.
-<p align="left">
-<img src="./content/radar.png" width="50%">
-</p>
 
-OmniFusion-1.1 (with GigaChat LLM) results on various benchmarks:
+OmniFusion-1.1 (GigaChat LLM) results on various benchmarks:
 <p align="left">
 <img src="./content/radar_plot_gigachat.png" width="50%">
+</p>
+
+Omifusion-1 results:
+<p align="left">
+<img src="./content/radar.png" width="50%">
 </p>
 
 Omifusion-1.1 (Mistral)

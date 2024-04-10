@@ -68,6 +68,14 @@ Omifusion-1 (previous version) Performance on Visual Dialog Benchmark
 <img src="./content/examples.png" width="100%">
 </p>
 
+### OmniFusion-1.1 examples
+<p align="left">
+<img src="https://raw.githubusercontent.com/AIRI-Institute/OmniFusion/main/content/ex1.png" width="100%">
+</p>
+<p align="left">
+<img src="https://raw.githubusercontent.com/AIRI-Institute/OmniFusion/main/content/ex2.png" width="100%">
+</p>
+
 ### Future Plans
 
 Work is underway on a version that understands Russian, uses ImageBind encoders, and accepts more modalities (sound, 3D, video). Stay tuned for updates on GitHub!

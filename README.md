@@ -50,7 +50,7 @@ OmniFusion-1.1 (GigaChat LLM) results on various benchmarks:
 <img src="./content/radar_plot_gigachat.png" width="50%">
 </p>
 
-Omifusion-1 results:
+Omifusion-1.0 results:
 <p align="left">
 <img src="./content/radar.png" width="50%">
 </p>
@@ -61,7 +61,7 @@ Omifusion-1.1 (Mistral)
 | OmniFusion-1.1 (one encoder, Mistral)  | **0.4893** | **0.6802**     | 0.7818    | 0.4600   | 0.5187  |
 | OmniFusion-1.1 (two encoders, Mistral) | 0.4755 | 0.6732     | **0.8153**    | **0.4761**   | **0.5317**  |
 
-Omifusion-1 (previous version) Performance on Visual Dialog Benchmark
+Omifusion-1.0 (previous version) Performance on Visual Dialog Benchmark
 
 | Model        | NDCG | MRR  | Recall@1 | Recall@5 | Recall@10 |
 | ------------ | ---- | ---- | -------- | -------- | --------- |

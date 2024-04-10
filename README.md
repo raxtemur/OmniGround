@@ -6,7 +6,7 @@
 **OmniFusion** is an advanced multimodal AI model designed to extend the capabilities of traditional language processing systems by integrating additional data modalities such as images, and potentially audio, 3D and video content.
 
 ### ChangeLog
-[01/04/2024] OmniFusion-1.1 weights are uploaded to [Huggingface](https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1). Now the model can speak Russian :)
+[10/04/2024] OmniFusion-1.1 weights are uploaded to [Huggingface](https://huggingface.co/AIRI-Institute/OmniFusion/tree/main/OmniMistral-v1_1). Now the model can speak Russian :)
 
 [01/04/2024] Model training [source code](https://github.com/AIRI-Institute/OmniFusion/tree/main/OmniFusion/train_src) for OmniFusion-1.1 released
 
@@ -37,28 +37,28 @@ To further enhance the model's multimodal capabilities, we employ trainable spec
 
 ### Results
 
-OmniFusion was benchmarked against the latest multimodal SOTA models. It excelled in generative metrics and classification benchmarks like VisualDialog.
+OmniFusion was benchmarked against the latest multimodal SOTA models. It excelled in generative metrics and classification benchmarks like TextVQA.
 <p align="left">
 <img src="./content/radar.png" width="50%">
 </p>
 
-Update: OmniFusion-1.1 (with proprietary GigaChat LLM) results on various benchmarks:
+OmniFusion-1.1 (with GigaChat LLM) results on various benchmarks:
 <p align="left">
 <img src="./content/radar_plot_gigachat.png" width="50%">
 </p>
 
-Model Performance on Visual Dialog Benchmark
+Omifusion-1.1 (Mistral)
+| Model                                  | textvqa| scienceqa  | pope      | gqa      | ok_vqa  |
+| -------------------------------------- | ------ | ---------- | --------- | -------- | ------- |
+| OmniFusion-1.1 (one encoder, Mistral)  | **0.4893** | **0.6802**     | 0.7818    | 0.4600   | 0.5187  |
+| OmniFusion-1.1 (two encoders, Mistral) | 0.4755 | 0.6732     | **0.8153**    | **0.4761**   | **0.5317**  |
+
+Omifusion-1 (previous version) Performance on Visual Dialog Benchmark
 
 | Model        | NDCG | MRR  | Recall@1 | Recall@5 | Recall@10 |
 | ------------ | ---- | ---- | -------- | -------- | --------- |
 | OmniFusion   | 25.91| 10.78| 4.74     | 13.80    | 20.53     |
 | LLaVA-13B    | 24.74| 8.91 | 2.98     | 10.80    | 18.02     |
-
-Omifusion-1.1 (rus)
-| Model                                  | textvqa| scienceqa  | pope      | gqa      | ok_vqa  |
-| -------------------------------------- | ------ | ---------- | --------- | -------- | ------- |
-| OmniFusion-1.1 (one encoder, Mistral)  | **0.4893** | **0.6802**     | 0.7818    | 0.4600   | 0.5187  |
-| OmniFusion-1.1 (two encoders, Mistral) | 0.4755 | 0.6732     | **0.8153**    | **0.4761**   | **0.5317**  |
 
 ### Examples
 
@@ -68,7 +68,7 @@ Omifusion-1.1 (rus)
 
 ### Future Plans
 
-We will soon release a public version of OmniFusion based on an open language model. Work is underway on a version that understands Russian, uses ImageBind encoders, and accepts more modalities (sound, 3D, video). Stay tuned for updates on GitHub!
+Work is underway on a version that understands Russian, uses ImageBind encoders, and accepts more modalities (sound, 3D, video). Stay tuned for updates on GitHub!
 
 ### Authors
 

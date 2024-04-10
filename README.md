@@ -35,11 +35,17 @@ To further enhance the multimodal capabilities of the model, we use learnable cu
 
 1. Pre-training the adapter on Image Captioning tasks (LAION, CC-4M, etc.).
 2. Once the adapter has learned to map visual embeddings to the language model's textual space, we proceed to unfreeze Mistral for improved understanding of dialog formats and complex queries.
-3. The dataset consists of data in English and Russian, the English part has the following structure:
+3. The dataset consists of data in English and Russian and has the following structure:
 
-<p align="left">
-<img src="./content/datasets.png" width="80%">
-</p>
+| Task          | Dataset Source                     | #Samples   |
+| --------------| ---------------------------------- |  --------- |
+| Caption       | ShareGPT4V                         | 100K       |
+| VQA           | COCO, SAM-9K                       | 20K, 9K    |
+| WebQA         | WebData                            | 1.5K       |
+| OCRQA         | TextVQA, OCRVQA                    | 120K       |
+| Conversation  | LLaVA-v1.5-665K, OCRVQA            | 665K       |
+| DocVQA        | Proprietary data (ru)              | 20K        |
+| Text-only SFT | Proprietary data (ru), Alpaca (en) | 10K        |
 
 ### Results
 

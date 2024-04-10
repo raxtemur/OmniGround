@@ -15,7 +15,7 @@
 ### Architecture
 
 <p align="left">
-<img src="./content/architecture.png" width="100%">
+<img src="./content/architecture2.png" width="100%">
 </p>
 
 

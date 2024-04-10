@@ -362,15 +362,53 @@
                                 <li>
                                     <b>Stage 2: Fine-tuning End-to-End on multimodal dialogues</b>.
                                     <span style="font-size: 95%"
-                                        >Both the projection and LLM are updated using a mix of instructive data, the data consists of two parts: Russian-language and English-language dialogues. The English part of the dataset has the following structure
+                                        >Both the projection and LLM are updated using a mix of instructive data, the data consists of two parts: Russian-language and English-language dialogues. The dataset has the following structure:
                                         <centering>
-                                            <div style="text-align: center">
-                                                <img
-                                                    id="teaser"
-                                                    width="75%"
-                                                    src="images/Instructive SFT datasets.svg"
-                                                />
-                                            </div>
+	                                    <div class="table-responsive">
+	                                        <table
+	                                            class="center"
+	                                            style="margin-left: auto; margin-right: auto"
+	                                            cellspacing="2"
+	                                            border="1"
+	                                            width="80%"
+	                                            height="10%"
+	                                            cellpadding="5"
+	                                        >
+	                                            <caption>
+	                                                SFT Datasets
+	                                            </caption>
+	                                            <tr>
+	                                                <th>Task</th>
+	                                                <td>Caption</td>
+	                                                <td>VQA</td>
+	                                                <td>WebQA</td>
+	                                                <td>OCRQA</td>
+	                                                <td>Conversation</td>
+							<td>DocVQA</td>
+							<td>Text-only SFT</td>
+	                                            </tr>
+	                                            <tr>
+	                                                <th>Dataset source</th>
+	                                                <td>ShareGPT4V</td>
+	                                                <td>COC, SAM-9K</td>
+	                                                <td>WebData</td>
+	                                                <td>TextVQA, OCRVQA</td>
+	                                                <td>LLaVA-v1.5-665k, OCRVQA</td>
+							<td>Proprietary data (ru)</td>
+							<td>Proprietary data (ru), Alpaca (en)</td>
+	                                            </tr>
+	                                            <tr>
+	                                                <th>#Samples</th>
+	                                                <td>100K</td>
+	                                                <td>20K, 9K</td>
+	                                                <td>1.5K</td>
+	                                                <td>120K</td>
+	                                                <td>665K</td>
+							<td>20K</td>
+							<td>10K</td>
+	                                            </tr>
+	                                        </table>
+	                                    </div>
                                         </centering>
                                     </span>
                                 </li>

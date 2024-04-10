@@ -191,6 +191,15 @@
                                             <span>Telegram Bot (Coming Soon!)</span>
                                         </a>
                                     </span>
+                                    <span class="link-block">
+                                        <a
+                                            href="https://arxiv.org/abs/2404.06212"
+                                            target="_blank"
+                                            class="external-link button is-normal is-rounded is-dark"
+                                        >
+                                            <span>ArXiv paper</span>
+                                        </a>
+                                    </span>	
                                     <!-- <span class="link-block">
 						<a href="#"
 						   class="external-link button is-normal is-rounded is-dark">
@@ -334,28 +343,26 @@
                     <div class="column is-full-width">
                         <div class="content has-text-justified">
                             <p>
-                                OmniFusion connects pre-trained
-                                <a href="https://openai.com/research/clip">CLIP ViT-L/14</a> visual encoder and large
-                                language model, using a Transformer Encoder layer.
+				There are two architecture options for the OmniFusion model. The first option uses one visual encoder (<a href="https://openai.com/research/clip">CLIP ViT-L/14</a>), the second uses two encoders (CLIP ViT-L/14 and DINO v2). OmniFusion connects pre-trained visual encoders and large language model, using trainable adapter.
                                 <centering>
                                     <div style="text-align: center">
-                                        <img id="teaser" width="100%" src="images/omnifusion_arch.png" />
+                                        <img id="teaser" width="100%" src="https://raw.githubusercontent.com/AIRI-Institute/OmniFusion/main/content/architecture2.png" />
                                     </div>
                                 </centering>
                             </p>
                             <p>We consider a two-stage instruction-tuning procedure:</p>
                             <ul type="1">
                                 <li>
-                                    <b>Stage 1: Pre-training for Feature Alignment</b>.
+                                    <b>Stage 1: Pre-training for Feature Alignment on pairs (image & caption)</b>.
                                     <span style="font-size: 95%"
-                                        >Only the projection Transformer Layer is updated, based on a subset of CC3M and
+                                        >Only the adapter is training, based on a subset of CC3M and
                                         COCO.</span
                                     >
                                 </li>
                                 <li>
-                                    <b>Stage 2: Fine-tuning End-to-End</b>.
+                                    <b>Stage 2: Fine-tuning End-to-End on multimodal dialogues</b>.
                                     <span style="font-size: 95%"
-                                        >Both the projection and LLM are updated using a mix of instructive data:
+                                        >Both the projection and LLM are updated using a mix of instructive data, the data consists of two parts: Russian-language and English-language dialogues. The English part of the dataset has the following structure
                                         <centering>
                                             <div style="text-align: center">
                                                 <img
@@ -367,6 +374,7 @@
                                         </centering>
                                     </span>
                                 </li>
+				
                             </ul>
                         </div>
                     </div>

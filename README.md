@@ -19,17 +19,20 @@
 </p>
 
 
-OmniFusion open source version core is Mistral-7B. Initially focusing on images, we selected the CLIP-ViT-L as the visual encoder for its efficient information transfer capabilities. The most important component of OmniFusion is its adapter, a mechanism allowing the language model to interpret and incorporate information from different modalities. The adapter is a single-layer, four-headed transformer, which has shown superior performance compared to simpler linear layers or MLP structures.
+The open source OmniFusion core is Mistral-7B. There are two versions of the model: the first uses one visual encoder CLIP-ViT-L, the second uses two encoders (CLIP-ViT-L and Dino V2). Initially focusing on images, we chose CLIP-ViT-L as a visual encoder due to for its efficient information transfer capabilities.
 
-This adapter takes embeddings from the visual encoder (excluding the CLS token) and maps them into textual embeddings compatible with the language model.
+The most important component of OmniFusion is its adapter, a mechanism that allows the language model to interpret and incorporate information from different modalities. For the single encoder version, the adapter is a single-layer four-headed transformer layer that has shown superior performance compared to simpler linear layers or MLP structures. The model with two encoders uses an adapter that collects features from all layers of visual encoders, this adapter does not have an attention layer.
 
-To further enhance the model's multimodal capabilities, we employ trainable special tokens to mark the beginning and end of visual data within the text sequence.
+The adapter takes embeddings from the visual encoder (excluding the CLS token) and maps them to textual embeddings that are compatible with the language model.
+
+To further enhance the multimodal capabilities of the model, we use learnable custom tokens to mark the beginning and end of visual data in a text sequence.
 
 
 ### Training Process consists of two stages
 
-1. Pre-training the adapter on Image Captioning tasks (LAION, CC-4M).
-2. Once the adapter has learned to map ViT's visual embeddings to the language model's textual space, we proceed to unfreeze Mistral for improved understanding of dialog formats and complex queries.
+1. Pre-training the adapter on Image Captioning tasks (LAION, CC-4M, etc.).
+2. Once the adapter has learned to map visual embeddings to the language model's textual space, we proceed to unfreeze Mistral for improved understanding of dialog formats and complex queries.
+3. The dataset consists of data in English and Russian, the English part has the following structure:
 
 <p align="left">
 <img src="./content/datasets.png" width="80%">

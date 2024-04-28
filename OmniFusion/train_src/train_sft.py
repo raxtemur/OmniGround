@@ -15,7 +15,8 @@ from pytorch_lightning.loggers import CSVLogger
 
 from models import VisualToGPTMapping, CLIPVisionTower, initialize_special_embs
 from dataset import get_dataset, get_collate_function
-        
+
+torch.set_float32_matmul_precision('medium')
 
 class Config:
     def __init__(self, **kwargs):
@@ -60,7 +61,8 @@ class Model_pl(pl.LightningModule):
     def configure_optimizers(self):
         
         optimizer = Adafactor(list(self.special_embs.values()) + list(self.projection.parameters()) + list(self.model.parameters()), lr=self.cfg.learning_rate, relative_step=False)
-        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=self.n_iters // self.cfg.grad_accum * 0.01, num_training_steps=self.n_iters // self.cfg.grad_accum)
+        scheduler_steps = self.n_iters * self.cfg.n_epochs // (self.cfg.grad_accum * len(self.cfg.num_devices)) 
+        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=scheduler_steps* 0.01, num_training_steps=scheduler_steps)
         return {'optimizer': optimizer, 'lr_scheduler': {
             'scheduler': scheduler,
             'interval': 'step',
@@ -77,10 +79,12 @@ class Model_pl(pl.LightningModule):
         
     def training_step(self, batch, batch_idx):
         images, images_mask, labels, mask, positions = batch
+        # print(images.shape)
         if images_mask.sum() > 0:
             image_embedding = self.clip(images).to(dtype=torch.bfloat16) # preprocessing!!!
             projected_vision_embeddings = self.projection(image_embedding)
-        
+        # print(projected_vision_embeddings.shape)
+
         embeddings = self.model.model.embed_tokens(labels)
         img_idx_counter = 0
         for i in range(len(embeddings)):
@@ -108,8 +112,10 @@ class Model_pl(pl.LightningModule):
         
         loss = self.loss_fct(logits.view(-1, self.n_embeddings), labels.view(-1)).mean()
             
-        self.log("my_loss", loss, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
-        if batch_idx % self.cfg.ckp_iterations_step == 0 and self.global_rank == 0:
+        self.log("my_loss", loss, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True, batch_size=self.cfg.batch_size*self.cfg.grad_accum)
+        self.log("lr", self.trainer.optimizers[0].param_groups[0]['lr'], on_step=True, on_epoch=True, prog_bar=True, sync_dist=True, batch_size=self.cfg.batch_size*self.cfg.grad_accum)
+        
+        if (batch_idx) % self.cfg.ckp_iterations_step == 0 and self.global_rank == 0:
             os.makedirs(f"ckpts/{self.cfg.exp_name}/{batch_idx}", exist_ok=True)
             torch.save(self.projection, f"ckpts/{self.cfg.exp_name}/{batch_idx}/projection.pt")
             torch.save(self.special_embs, f"ckpts/{self.cfg.exp_name}/{batch_idx}/special_embeddings.pt")
@@ -118,12 +124,11 @@ class Model_pl(pl.LightningModule):
         
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.cfg.batch_size, collate_fn=self.collate_function, num_workers = self.cfg.num_workers)
+        return DataLoader(self.train_dataset, batch_size=self.cfg.batch_size, collate_fn=self.collate_function, num_workers = self.cfg.num_workers, shuffle=True)
 
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='./configs/config-sft.json')
     args = parser.parse_args()
@@ -136,11 +141,11 @@ if __name__ == "__main__":
     unk_id = tokenizer.encode("<unk>", add_special_tokens=False)[0]
     cfg.pad_id = unk_id
     os.makedirs(f"ckpts/{cfg.exp_name}", exist_ok=True)
-    logger = CSVLogger("ckpts", name=cfg.exp_name)
+    logger = CSVLogger("ckpts", name=cfg.exp_name, flush_logs_every_n_steps=1)
     cfg.exp_name = os.path.join(cfg.exp_name, f'version_{logger.version}')
     
     
-    model = AutoModelForCausalLM.from_pretrained(cfg.model_ckp, torch_dtype=torch.bfloat16, device_map='cpu')
+    model = AutoModelForCausalLM.from_pretrained(cfg.pretrain_path, subfolder="tuned-model", torch_dtype=torch.bfloat16, device_map='cpu')
 
     clip = CLIPVisionTower("openai/clip-vit-large-patch14-336")
     clip.load_model()
@@ -154,12 +159,15 @@ if __name__ == "__main__":
     special_embs['USER'].requires_grad_()
     special_embs['BOT'].requires_grad_()
     
-    freeze(clip)
+    if cfg.freeze > 0:
+        freeze(clip)
+    if cfg.freeze > 1:
+        freeze(model)
     
     ### Work with data
     train_dataset = get_dataset(cfg, tokenizer, clip.image_processor)
     collate_function = get_collate_function(cfg)
 
     module = Model_pl(cfg, clip, special_embs, model, projection, train_dataset, collate_function)
-    trainer = pl.Trainer(devices=8, max_epochs=cfg.n_epochs, logger=logger, accumulate_grad_batches=cfg.grad_accum, strategy='ddp_find_unused_parameters_true')
+    trainer = pl.Trainer(devices=cfg.num_devices, max_epochs=cfg.n_epochs, logger=logger, accumulate_grad_batches=cfg.grad_accum, log_every_n_steps=10, strategy='ddp') #ddp_find_unused_parameters_true
     trainer.fit(module)

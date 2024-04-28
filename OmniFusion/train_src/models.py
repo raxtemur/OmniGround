@@ -98,3 +98,23 @@ class CLIPVisionTower(nn.Module):
     @property
     def hidden_size(self):
         return self.config.hidden_size
+
+class GroundingModel(nn.Module):
+    def __init__(self, gpt_emb_dim, num_gpt_embs):
+        super().__init__()        
+        self.n_embeddings = num_gpt_embs
+        self.embedding_dim = gpt_emb_dim
+        
+        self.pool = nn.AdaptiveMaxPool1d(1)
+        self.fc1 = nn.Linear(gpt_emb_dim, gpt_emb_dim)
+        self.fc2 = nn.Linear(gpt_emb_dim, 4)
+        
+    def forward(self, image_features):
+        # image_features: expected shape [batch_size, num_gpt_embs, gpt_emb_dim]
+        x = image_features.transpose(1, 2)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc1(x))
+        x = torch.sigmoid(self.fc2(x))
+        
+        return x

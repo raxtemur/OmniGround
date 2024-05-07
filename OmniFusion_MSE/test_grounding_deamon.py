@@ -9,14 +9,14 @@ import numpy as np
 from tqdm import tqdm
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from train_src.dataset import get_collate_function, get_dataset
+from dataset import get_collate_function, get_dataset
 from models import CLIPVisionTower
 import warnings
 import jsonlines
 warnings.filterwarnings("ignore")
 torch.inference_mode()
 
-DEVICE = "cuda:2"
+DEVICE = "cuda:0"
 PROMPT = "This is a dialog with AI assistant.\n"
 
 
@@ -41,11 +41,11 @@ def get_gen_params(tokenizer):
     return gen_params
 
 
-def gen_answer(model, tokenizer, clip, projection, query, special_embs, image=None, device=DEVICE):
-    gen_params = get_gen_params(tokenizer)
-    
+def gen_answer(model, tokenizer, clip, projection, grounding_head, query, special_embs, image=None, device=DEVICE):
+    bad_words_ids = tokenizer(["\n", "</s>", ":"], add_special_tokens=False).input_ids + [[13]]
+
     with torch.no_grad():
-        image_features = clip.image_processor(image, return_tensors='pt')
+        image_features = clip.image_processor(image.resize((336, 336)), return_tensors='pt', do_center_crop=False)
         image_embedding = clip(image_features['pixel_values']).to(device=device, dtype=torch.bfloat16)
 
         projected_vision_embeddings = projection(image_embedding).to(device=device, dtype=torch.bfloat16)
@@ -67,18 +67,20 @@ def gen_answer(model, tokenizer, clip, projection, query, special_embs, image=No
             ],
             dim=1,
         ).to(dtype=torch.bfloat16, device=device)
-        out = model.generate(inputs_embeds=embeddings, **gen_params)
-    out = out[:, :-1]
-    generated_texts = tokenizer.batch_decode(out)[0]
-    return generated_texts
+        # out = model.generate(inputs_embeds=embeddings, **gen_params)
+        emb = model(inputs_embeds=embeddings, output_hidden_states=True).get("hidden_states")[-1]
+        emb = emb[:, -1, :].to(dtype=torch.bfloat16)
+        predictions = grounding_head(emb)[0]
+    # generated_texts = tokenizer.batch_decode(out)[0]
+    return predictions
 
 def correct_bbox(bbox):
     left, top, right, bottom = bbox
     
     new_bottom = min(max(top, bottom), 1)
-    new_top = min(top, bottom)
+    new_top = max(min(top, bottom), 0)
     
-    new_left = min(left, right)
+    new_left = max(min(left, right), 0)
     new_right = min(max(left, right), 1)
     
     return new_left, new_top, new_right, new_bottom
@@ -159,19 +161,21 @@ def calculate_metrics(bbox_pred, bbox_gt):
         "F1 Score": f1_score
     }
 
-def evaluate_ckpt(args, data, ckpt_path):
+def evaluate_ckpt(args, data, ckpt_path, model):
     # Загрузка модели
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, subfolder=args.subfolder, use_fast=False)
-    model = AutoModelForCausalLM.from_pretrained(ckpt_path, subfolder="tuned-model", torch_dtype=torch.bfloat16, device_map=DEVICE)
+    # model = AutoModelForCausalLM.from_pretrained(args.orig_ckpt, subfolder="tuned-model", torch_dtype=torch.bfloat16, device_map=DEVICE)
     # model = AutoModelForCausalLM.from_pretrained(os.path.join(args.ckpt_path, "tuned-model"), torch_dtype=torch.bfloat16, device_map=DEVICE)
     projection = torch.load(os.path.join(ckpt_path, "projection.pt"), map_location=DEVICE)
     special_embs = torch.load(os.path.join(ckpt_path,"special_embeddings.pt"), map_location=DEVICE)
+    grounding_head = torch.load(os.path.join(ckpt_path, "grounding_head.pt"), map_location=DEVICE)
+    grounding_head.to(dtype=torch.bfloat16)
     
     clip = CLIPVisionTower("openai/clip-vit-large-patch14-336")
     clip.load_model()
     clip = clip.to(device=DEVICE, dtype=torch.bfloat16)
     torch.inference_mode()
-    model.eval()
+    # model.eval()
     projection.eval()
     clip.eval()
     
@@ -189,14 +193,18 @@ def evaluate_ckpt(args, data, ckpt_path):
                 tokenizer,
                 clip,
                 projection,
+                grounding_head,
                 query=question,
                 special_embs=special_embs,
                 image=img
             )
 
-            bbox_ans = get_bbox(answer)
-            bbox_gt = get_bbox(gt_ans)
-
+            
+            bbox_gt = sample.get("coords", get_bbox(gt_ans))
+            answer = str(list(np.array(answer.to(dtype=torch.float32).cpu())))
+            bbox_ans = correct_bbox(get_bbox(answer))
+            # bbox_ans = get_bbox(answer)
+            
             # Получение размеров изображения
             # width, height = img.size
             # bbox_ans_coors = rel_to_abs(bbox_ans, width, height)
@@ -216,7 +224,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_samples', type=int, default=200)
     # parser.add_argument('--ckpt_path', type=str, default="./ckpts/Grouning_0/version_2/49999")
-    parser.add_argument('--exp_path', type=str, default="./ckpts/Grouning_0/version_2/")
+    parser.add_argument('--exp_path', type=str, default="./ckpts/Grouning_MSE/version_1/")
+    parser.add_argument('--orig_ckpt', type=str, default="./OmniFusion/MicroOmnic")
     parser.add_argument('--data_path', type=str, default="./data/")
     parser.add_argument('--dataset', type=str, default="CWB_flickr30k_test_short_ref.json")
     parser.add_argument('--tokenizer', type=str, default="AIRI-Institute/OmniFusion") # could be taken from exp
@@ -228,6 +237,9 @@ if __name__ == "__main__":
         args.subfolder = "OmniMistral-v1_1/tokenizer"
     else:
         args.subfolder = None
+
+    model = AutoModelForCausalLM.from_pretrained(args.orig_ckpt, subfolder="tuned-model", torch_dtype=torch.bfloat16, device_map=DEVICE)
+    model.eval()
 
     # Загрузка аннотаций
     annotation_path = os.path.join(args.data_path, args.dataset)
@@ -273,7 +285,7 @@ if __name__ == "__main__":
                     if str(ckpt_id) in known_folders:
                         continue
 
-                    mean_metrics = evaluate_ckpt(args, data, ckpt_path)
+                    mean_metrics = evaluate_ckpt(args, data, ckpt_path, model)
                     print("Model: ", ckpt_path)
                     print("Mean IoU: ", mean_metrics["IoU"])
                     print("Mean Precision: ", mean_metrics["Precision"])

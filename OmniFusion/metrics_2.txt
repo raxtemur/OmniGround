@@ -1,0 +1,13 @@
+Filename: ../data/OMNIGROUND_refcoco+_unc_testA_new.json
+Accuracy@0.5: 0.11058601134215501
+Accuracy@0.5: 0.10216556060076842
+Mean pxwise metrics: 
+{
+    "IoU": 0.18723569575873694,
+    "IoU X-axis": 0.26554264949335343,
+    "IoU Y-axis": 0.643131840596469,
+    "Precision": 0.20203875893573817,
+    "Recall": 0.48954040771753554,
+    "F1 Score": 0.2659437530733169
+}
+

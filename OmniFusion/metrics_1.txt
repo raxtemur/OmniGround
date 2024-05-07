@@ -1,0 +1,52 @@
+Filename: ../data/OMNIGROUND_refcoco+_unc_testB_new.json
+Accuracy@0.5: 0.085801393728223
+Accuracy@0.5: 0.08058907752096543
+Mean pxwise metrics: 
+{
+    "IoU": 0.17705295445263539,
+    "IoU X-axis": 0.32087170151583444,
+    "IoU Y-axis": 0.5023803494484425,
+    "Precision": 0.191327706442674,
+    "Recall": 0.5207682470768492,
+    "F1 Score": 0.25824346135618326
+}
+
+Filename: ../data/OMNIGROUND_refcoco+_unc_val_new.json
+Accuracy@0.5: 0.09593949044585988
+Accuracy@0.5: 0.08960773377951292
+Mean pxwise metrics: 
+{
+    "IoU": 0.1730592083054706,
+    "IoU X-axis": 0.27334821043415913,
+    "IoU Y-axis": 0.5829963937142206,
+    "Precision": 0.18782977710199933,
+    "Recall": 0.48312664530656085,
+    "F1 Score": 0.24943456058025504
+}
+
+Filename: ../data/OMNIGROUND_refcocog_umd_test_new.json
+Accuracy@0.5: 0.11955904080009092
+Accuracy@0.5: 0.10956050822745261
+Mean pxwise metrics: 
+{
+    "IoU": 0.19058216483848076,
+    "IoU X-axis": 0.30912301436531897,
+    "IoU Y-axis": 0.5405199383598569,
+    "Precision": 0.207471678077388,
+    "Recall": 0.5069596470169001,
+    "F1 Score": 0.27014347351585355
+}
+
+Filename: ../data/OMNIGROUND_refcocog_umd_val_new.json
+Accuracy@0.5: 0.10939597315436242
+Accuracy@0.5: 0.09987745098039216
+Mean pxwise metrics: 
+{
+    "IoU": 0.18316054720943145,
+    "IoU X-axis": 0.29714503113386415,
+    "IoU Y-axis": 0.5352740507596467,
+    "Precision": 0.1998909797368568,
+    "Recall": 0.4929983025913535,
+    "F1 Score": 0.2615527883032253
+}
+

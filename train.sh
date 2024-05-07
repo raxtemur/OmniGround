@@ -1,3 +1,3 @@
 #!/bin/bash
 
-TORCH_DISTRIBUTED_DEBUG=DETAIL python3 OmniFusion/train_src/train_sft.py --config OmniFusion/train_src/configs/config-sft-micro-gr.json
+TORCH_DISTRIBUTED_DEBUG=DETAIL python3 OmniFusion_MSE/train_ground.py --config OmniFusion_MSE/configs/config-ground.json

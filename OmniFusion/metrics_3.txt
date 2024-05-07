@@ -1,0 +1,13 @@
+Filename: ../data/OMNIGROUND_refcocog_umd_val_new.json
+Accuracy@0.5: 0.11356045424181696
+Accuracy@0.5: 0.10416666666666667
+Mean pxwise metrics: 
+{
+    "IoU": 0.18531120627186132,
+    "IoU X-axis": 0.301618287933078,
+    "IoU Y-axis": 0.5372600594608562,
+    "Precision": 0.20288678447455108,
+    "Recall": 0.4979665184782008,
+    "F1 Score": 0.26483784280462735
+}
+

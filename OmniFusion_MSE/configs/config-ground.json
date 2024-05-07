@@ -1,0 +1,20 @@
+{
+    "exp_name": "Grounding_MSE",
+    "tokenizer_ckp": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "original_ckp": "./OmniFusion/MicroOmnic",
+    "pretrain_path": "./ckpts/Grounding_MSE/version_0/22000",
+    "n_epochs": 1,
+    "grad_accum": 2,
+    "learning_rate": 1e-4,
+    "prompt": "This is a dialog with AI assistant.\n",
+    "num_workers": 16,
+    "batch_size": 32,
+    "emb_dim": 2048,
+    "max_context_len": 2048,
+    "vision_emb_num": 576,
+    "projection_num_head": 4,
+    "json_data_path": "data/OMNIGROUND_stacked_train.json",
+    "image_folder": "data/",
+    "num_devices": [0, 1, 2, 3],
+    "ckp_iterations_step": 100
+}

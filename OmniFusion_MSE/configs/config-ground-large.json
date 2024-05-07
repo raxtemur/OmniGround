@@ -1,0 +1,20 @@
+{
+    "exp_name": "Grounding_MSE_7B",
+    "tokenizer_ckp": "./OmniFusion/OmniMistral-v1_1/tokenizer",
+    "original_ckp": "./OmniFusion/OmniMistral-v1_1/",
+    "pretrain_path": "./OmniFusion/OmniMistral-v1_1",
+    "n_epochs": 1,
+    "grad_accum": 16,
+    "learning_rate": 5e-3,
+    "prompt": "This is a dialog with AI assistant.\n",
+    "num_workers": 1,
+    "batch_size": 4,
+    "emb_dim": 4096,
+    "max_context_len": 2048,
+    "vision_emb_num": 576,
+    "projection_num_head": 4,
+    "json_data_path": "data/OMNIGROUND_stacked_train.json",
+    "image_folder": "data/",
+    "num_devices": [2, 3],
+    "ckp_iterations_step": 1000
+}

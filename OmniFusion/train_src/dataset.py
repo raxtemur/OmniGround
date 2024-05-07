@@ -34,7 +34,7 @@ class OmniDataset(Dataset):
         image = None
         if 'image' in data_item.keys():
             image_path = f"{self.cfg.image_folder}/{data_item['image']}"
-            image = self.image_processor((Image.open(image_path)), return_tensors='pt')['pixel_values'][0]
+            image = self.image_processor((Image.open(image_path)).resize((336, 336)), return_tensors='pt', do_center_crop=False)['pixel_values'][0]
 
             tokens.append(
                 torch.tensor(
@@ -71,19 +71,22 @@ class OmniDataset(Dataset):
                 mask += text_tokens.shape[-1] * [False]
             else:
                 mask += text_tokens.shape[-1] * [True]
+        coords = data_item['coords']
 
         tokens = torch.cat(tokens, dim = -1)[0]
         mask = torch.tensor(mask, dtype=bool)
-        return image, tokens, mask, positions
+        return image, tokens, mask, positions, coords
         
 
 def get_dataset(cfg, tokenizer, image_processor):
+
     return OmniDataset(cfg, tokenizer, image_processor)
 
 
 def get_collate_function(cfg):
+
     def colate_fn(data):
-        images, tokens, masks, positions = zip(*data)
+        images, tokens, masks, positions, coords = zip(*data)
 
         images_mask = torch.tensor([True if image is not None else False for image in images], dtype=bool)
         if images_mask.sum() > 0:
@@ -93,12 +96,17 @@ def get_collate_function(cfg):
         tokens = list(tokens)
         masks = list(masks)
         positions = list(positions)
+        coords = list(coords)
         max_len = max([token.shape[-1] for token in tokens])
+
         for i in range(len(tokens)):
             pad_len = max_len - tokens[i].shape[-1]
             masks[i] = torch.cat([masks[i], torch.tensor(pad_len*[False], dtype=bool)], dim=0)
             tokens[i] = torch.cat([tokens[i], torch.tensor(pad_len*[cfg.pad_id], dtype=int)], dim=0)
+    
+        
         masks = torch.stack(masks)
         tokens = torch.stack(tokens)
-        return images, images_mask, tokens, masks, positions
+        coords = torch.tensor(coords)
+        return images, images_mask, tokens, masks, positions, coords
     return colate_fn

@@ -42,19 +42,23 @@ def unfreeze(model):
 
 
 class Model_pl(pl.LightningModule):
-    def __init__(self, cfg, clip, special_embs, model, projection, train_dataset, collate_function):
+    def __init__(self, cfg, clip, special_embs, model, projection, train_dataset, collate_function, 
+                 grounder: GroundingModel, coeff_g: int = 1):
         super().__init__()
         self.cfg = cfg
         self.clip = clip
         self.special_embs = special_embs
         self.projection = projection
         self.model = model
+        self.grounder = grounder
         self.n_embeddings = model.model.embed_tokens.weight.shape[0]
         self.loss_fct = nn.CrossEntropyLoss(reduction="none", ignore_index=cfg.pad_id)
+        self.loss_grounder = nn.MSELoss()
         self.train_dataset = train_dataset
         self.collate_function = collate_function
         self.n_iters = len(self.train_dataloader())
         self.save_hyperparameters('cfg')
+        self.coeff_g = coeff_g
         # self.automatic_optimization = False
         
     def configure_optimizers(self):
@@ -106,7 +110,10 @@ class Model_pl(pl.LightningModule):
         logits = logits[mask].contiguous().float()
         labels = labels[mask].contiguous()
 
-        loss = self.loss_fct(logits.view(-1, self.n_embeddings), labels.view(-1))
+        bboxes = self.grounder(image_embedding)
+        loss_gr = self.loss_grounder(bboxes, coords)
+        loss_llm = self.loss_fct(logits.view(-1, self.n_embeddings), labels.view(-1)).mean()
+        loss = (1 - self.coeff_g)*loss_llm + self.coeff_g*loss_gr
             
         self.log("my_loss", loss, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True, batch_size=self.cfg.batch_size*self.cfg.grad_accum)
         self.log("lr", self.trainer.optimizers[0].param_groups[0]['lr'], on_step=True, on_epoch=True, prog_bar=True, sync_dist=True, batch_size=self.cfg.batch_size*self.cfg.grad_accum)
@@ -148,6 +155,7 @@ if __name__ == "__main__":
     clip = clip.to(dtype=torch.bfloat16)
     
     projection = torch.load(f'{cfg.pretrain_path}/projection.pt', map_location=f'cpu')
+    grounder = GroundingModel(projection.embedding_dim, projection.n_embeddings)
     projection.transformer_layer.norm_first = False
     special_embs = torch.load(f'{cfg.pretrain_path}/special_embeddings.pt', map_location = f'cpu')
     special_embs['SOI'].requires_grad_()
@@ -164,6 +172,6 @@ if __name__ == "__main__":
     train_dataset = get_dataset(cfg, tokenizer, clip.image_processor)
     collate_function = get_collate_function(cfg)
 
-    module = Model_pl(cfg, clip, special_embs, model, projection, train_dataset, collate_function)
+    module = Model_pl(cfg, clip, special_embs, model, projection, train_dataset, collate_function, grounder=grounder, coeff_g = cfg.coeff_grounder)
     trainer = pl.Trainer(devices=cfg.num_devices, max_epochs=cfg.n_epochs, logger=logger, accumulate_grad_batches=cfg.grad_accum, log_every_n_steps=10, strategy='ddp') #ddp_find_unused_parameters_true
     trainer.fit(module)

@@ -13,8 +13,9 @@
     "vision_emb_num": 576,
     "ckp_iterations_step": 1000,
     "projection_num_head": 4,
-    "json_data_path": "data/ref3rec_new_train_1digts.json",
+    "json_data_path": "data/OMNIGROUND_REC_ref3_train_2digits.json",
     "image_folder": "data/",
     "num_devices": [1, 2, 3],
-    "freeze": 2
+    "freeze": 2,
+    "coeff_grounder": 0.8
 }

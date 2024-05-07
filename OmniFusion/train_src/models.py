@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import Linear, TransformerEncoderLayer
+import torch.nn.functional as F
 from transformers import CLIPVisionModel, CLIPImageProcessor
 
 
@@ -115,6 +116,6 @@ class GroundingModel(nn.Module):
         x = self.pool(x)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
-        x = torch.sigmoid(self.fc2(x))
+        # x = torch.sigmoid(self.fc2(x))
         
         return x
